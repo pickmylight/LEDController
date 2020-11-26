@@ -1,0 +1,21 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Importing Bootstrap SCSS file. */
+.btn {
+    min-width: 15%;
+    padding-left: 0.375rem !important;
+    padding-right: 0.375rem !important;
+}
+
+$theme-colors: (
+    "green": green,
+    "chocolate": chocolate,
+    "darkorange": darkorange,
+    "gold": gold,
+    "yellow": yellow,
+    "magenta": magenta,
+    "cyan": cyan,
+    "darkred": darkred
+);
+
+@import "~bootstrap/scss/bootstrap";
