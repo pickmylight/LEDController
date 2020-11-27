@@ -12,6 +12,8 @@ import { FormsModule } from '@angular/forms';
 import { DBConfig, NgxIndexedDBModule } from 'ngx-indexed-db';
 import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
+import { IMqttServiceOptions, MqttModule } from 'ngx-mqtt';
+import { SettingsComponent } from './settings/settings.component';
 
 const dbConfig: DBConfig  = {
     name: 'Database',
@@ -26,13 +28,23 @@ const dbConfig: DBConfig  = {
     }]
   };
 
+const mqttConfig: IMqttServiceOptions = {
+    hostname: environment.mqtt.server,
+    port: environment.mqtt.port,
+    protocol: (environment.mqtt.protocol === 'wss') ? 'wss' : 'ws',
+    path: '',
+    connectOnCreate: true,
+    clientId: 'helloApp'
+};
+
 @NgModule({
   declarations: [
     AppComponent,
     RemotesComponent,
     DigitalUVComponent,
     NoRemoteComponent,
-    DigitalSimpleComponent
+    DigitalSimpleComponent,
+    SettingsComponent
   ],
   imports: [
     BrowserModule,
@@ -41,7 +53,8 @@ const dbConfig: DBConfig  = {
     HttpClientModule,
     FormsModule,
     NgxIndexedDBModule.forRoot(dbConfig),
-    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production })
+    ServiceWorkerModule.register('ngsw-worker.js', { enabled: environment.production }),
+    MqttModule.forRoot(mqttConfig)
   ],
   providers: [],
   bootstrap: [AppComponent]

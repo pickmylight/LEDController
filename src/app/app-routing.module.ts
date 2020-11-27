@@ -4,6 +4,7 @@ import { DigitalSimpleComponent } from './remotes/digital-simple/digital-simple.
 import { DigitalUVComponent } from './remotes/digital-u-v/digital-u-v.component';
 import { NoRemoteComponent } from './remotes/no-remote/no-remote.component';
 import { RemotesComponent } from './remotes/remotes/remotes.component';
+import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
     {
@@ -19,6 +20,7 @@ const routes: Routes = [
             }
         ]
     },
+    { path: 'settings', component: SettingsComponent},
     { path: '**', redirectTo: '/remotes'}
 ];
 

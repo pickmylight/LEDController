@@ -1,11 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Subscription } from 'rxjs';
 import { CommandModel } from '../models/command-model';
-import { RemoteModel, RemoteTest } from '../models/remote-model';
-import { findLocalDevices } from 'local-devices/src/parser/index.js';
+import { RemoteMqtt } from '../models/remote-model';
 import { NgxIndexedDBService } from 'ngx-indexed-db';
-import { convertTypeAcquisitionFromJson } from 'typescript';
+import { IMqttMessage, MqttService } from 'ngx-mqtt';
 
 @Injectable({
     providedIn: 'root'
@@ -13,11 +12,16 @@ import { convertTypeAcquisitionFromJson } from 'typescript';
 export class RemoteServiceService {
     private readonly commandSource = new BehaviorSubject<CommandModel>({} as CommandModel);
     public currentCommand = this.commandSource.asObservable();
-    private readonly remoteSource = new BehaviorSubject<RemoteModel[]>([] as RemoteModel[]);
+    private readonly remoteSource = new BehaviorSubject<RemoteMqtt[]>([] as RemoteMqtt[]);
     public registeredRemotes = this.remoteSource.asObservable();
+    private readonly isAliveSource = new BehaviorSubject<boolean>(false);
+    private subscription: Subscription;
+    public isAlive = this.isAliveSource.asObservable();
+    private lastTime: number;
     constructor(
         private readonly http: HttpClient,
-        private readonly dbService: NgxIndexedDBService
+        private readonly dbService: NgxIndexedDBService,
+        private readonly mqttService: MqttService
     ) {
         this.getRemotes();
     }
@@ -30,7 +34,7 @@ export class RemoteServiceService {
         });
     }
 
-    private updateRemoteModel(remotes: RemoteModel[]): void {
+    private updateRemoteModel(remotes: RemoteMqtt[]): void {
         this.remoteSource.next(remotes);
     }
 
@@ -38,16 +42,31 @@ export class RemoteServiceService {
         this.commandSource.next(command);
     }
 
-    public postCommand(command: CommandModel, endpoint: string): Promise<CommandModel> {
-        this.updateCommand(command);
-        return this.http.post<CommandModel>(endpoint + '/command', command).toPromise();
+    public sendCommand(command: CommandModel, remote: RemoteMqtt): void {
+        this.mqttService.unsafePublish(remote.remoteChannel, Buffer.from(command.command));
     }
 
-    public testRemote(endpoint: string): Promise<RemoteTest> {
-        return this.http.get<RemoteTest>(endpoint + '/check').toPromise();
+    public subscribeAlive(remote: RemoteMqtt): void {
+        this.mqttService.unsafePublish(remote.remoteChannel, Buffer.from('alive'));
+        this.subscription = this.mqttService.observe('/isAlive').subscribe((message: IMqttMessage) => {
+            this.isAliveSource.next(true);
+            this.lastTime =  +message.payload.toString();
+        });
+        if ((Date.now() / 1000 - this.lastTime) >= 11.5){
+            this.isAliveSource.next(false);
+        }
     }
 
-    public saveRemoteUrl(remoteSet: RemoteModel): void {
+    public unsubscribe(): void {
+        try {
+            this.subscription.unsubscribe();
+            this.isAliveSource.next(false);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    public saveRemoteUrl(remoteSet: RemoteMqtt): void {
         this.dbService.getByIndex('remotes', 'remoteType', remoteSet.remoteType).subscribe((remotes) => {
             if (remotes === undefined) {
                 this.dbService.add('remotes', remoteSet);
@@ -55,7 +74,8 @@ export class RemoteServiceService {
                 this.dbService.update('remotes', {
                     id: remotes.id,
                     remoteUrl: remoteSet.remoteUrl,
-                    remoteType: remoteSet.remoteType
+                    remoteType: remoteSet.remoteType,
+                    remoteChannel: remoteSet.remoteChannel
                 });
             }
         });

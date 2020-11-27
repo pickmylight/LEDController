@@ -1,20 +1,27 @@
 <div>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">LED-Controller</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown"
+            aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav">
-            <li class="nav-item" routerLink="remotes/digital/uv">
-              <a class="nav-link" data-toggle="collapse" data-target="#navbarNavDropdown" routerLinkActive="active" routerLink="remotes/digital/uv">Digital UV</a>
-            </li>
-            <li class="nav-item" routerLink="remotes/digital/simple">
-                <a class="nav-link" data-toggle="collapse" data-target="#navbarNavDropdown" routerLinkActive="active" routerLink="remotes/digital/simple">Digital Simple</a>
-              </li>
-          </ul>
+            <ul class="navbar-nav">
+                <li class="nav-item" routerLink="remotes/digital/uv">
+                    <a class="nav-link" data-toggle="collapse" data-target="#navbarNavDropdown"
+                        routerLinkActive="active" routerLink="remotes/digital/uv">Digital UV</a>
+                </li>
+                <li class="nav-item" routerLink="remotes/digital/simple">
+                    <a class="nav-link" data-toggle="collapse" data-target="#navbarNavDropdown"
+                        routerLinkActive="active" routerLink="remotes/digital/simple">Digital Simple</a>
+                </li>
+                <li class="nav-item" routerLink="settings">
+                    <a class="nav-link" data-toggle="collapse" data-target="#navbarNavDropdown"
+                        routerLinkActive="active" routerLink="settings">Settings</a>
+                </li>
+            </ul>
         </div>
-      </nav>
+    </nav>
 </div>
 <div>
     <router-outlet></router-outlet>

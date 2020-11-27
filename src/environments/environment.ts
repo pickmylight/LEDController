@@ -3,7 +3,12 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  mqtt: {
+    server: '192.168.178.63',
+    protocol: 'ws',
+    port: 9001
+  }
 };
 
 /*
