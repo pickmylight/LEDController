@@ -19,7 +19,6 @@ export class RemoteServiceService {
     public isAlive = this.isAliveSource.asObservable();
     private lastTime: number;
     constructor(
-        private readonly http: HttpClient,
         private readonly dbService: NgxIndexedDBService,
         private readonly mqttService: MqttService
     ) {
@@ -43,12 +42,12 @@ export class RemoteServiceService {
     }
 
     public sendCommand(command: CommandModel, remote: RemoteMqtt): void {
-        this.mqttService.unsafePublish(remote.remoteChannel, Buffer.from(command.command));
+        this.mqttService.unsafePublish('/schmidtcloud.ddnss.de' + remote.remoteChannel, Buffer.from(command.command));
     }
 
     public subscribeAlive(remote: RemoteMqtt): void {
-        this.mqttService.unsafePublish(remote.remoteChannel, Buffer.from('alive'));
-        this.subscription = this.mqttService.observe('/isAlive').subscribe((message: IMqttMessage) => {
+        this.mqttService.unsafePublish('/schmidtcloud.ddnss.de' + remote.remoteChannel, Buffer.from('alive'));
+        this.subscription = this.mqttService.observe('/schmidtcloud.ddnss.de/isAlive').subscribe((message: IMqttMessage) => {
             this.isAliveSource.next(true);
             this.lastTime =  +message.payload.toString();
         });

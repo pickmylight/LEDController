@@ -32,9 +32,8 @@ const mqttConfig: IMqttServiceOptions = {
     hostname: environment.mqtt.server,
     port: environment.mqtt.port,
     protocol: (environment.mqtt.protocol === 'wss') ? 'wss' : 'ws',
-    path: '',
-    connectOnCreate: true,
-    clientId: 'helloApp'
+    path: '/mqtt',
+    connectOnCreate: true
 };
 
 @NgModule({

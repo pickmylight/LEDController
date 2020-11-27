@@ -5,9 +5,9 @@
 export const environment = {
   production: false,
   mqtt: {
-    server: '192.168.178.63',
+    server: 'broker.hivemq.com',
     protocol: 'ws',
-    port: 9001
+    port: 8000
   }
 };
 
