@@ -42,7 +42,24 @@ export class RemoteServiceService {
     }
 
     public sendCommand(command: CommandModel, remote: RemoteMqtt): void {
-        this.mqttService.unsafePublish('/schmidtcloud.ddnss.de' + remote.remoteChannel, Buffer.from(command.command));
+        const channel = '/schmidtcloud.ddnss.de' + remote.remoteChannel;
+        this.mqttService.publish(channel, command.command).subscribe({
+            next: () => {
+                console.log('message sent');
+            },
+            error: (error: Error) => {
+                console.log(error);
+            }
+        });
+    }
+
+    public sendCommand2(command: CommandModel, remote: RemoteMqtt): void {
+        const channel = '/schmidtcloud.ddnss.de' + remote.remoteChannel;
+        try {
+            this.mqttService.unsafePublish(channel, Buffer.from(command.command));
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     public subscribeAlive(remote: RemoteMqtt): void {
