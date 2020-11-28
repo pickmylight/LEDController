@@ -1,8 +1,8 @@
 export const environment = {
   production: true,
   mqtt: {
-    server: 'broker.hivemq.com',
+    server: 'broker.emqx.io',
     protocol: 'wss',
-    port: 8000
+    port: 8084
   }
 };
